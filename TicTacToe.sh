@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 #@Author : Amrut
-#TicTacToe UseCase 1 [Resetting the Board]
+#TicTacToe UseCase 2 [Toss to decide who get first chance to fill the board]
 
 echo "******Welcome to TicTacToe Game******"
 
@@ -24,5 +24,17 @@ function resettingBoard()
       done
    done
 }
+
+#function for the toss
+function toss()
+{
+   if [ $(( RANDOM%2 )) -eq 0 ]
+   then
+      echo "Player Won The Toss"
+   else
+      echo "Computer Won The Toss"
+   fi
+}
 resettingBoard
+toss
 
