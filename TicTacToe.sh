@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 #@Author : Amrut
-#TicTacToe UseCase 11 [Check for any side availablity]
+#TicTacToe UseCase 12 [Playing Till the game is over]
 
 echo "******Welcome to TicTacToe Game******"
 
@@ -82,6 +82,9 @@ function initializeBoard()
 #function to display the board
 function printBoard()
 {
+	echo "*************************"
+   echo "*****TicTacToeBoard******"
+   echo "*************************"
    for (( i=0; i<ROWS; i++ ))
    do
       for (( j=0; j<COLUMNS; j++ ))
@@ -213,6 +216,8 @@ function checkResult()
 function compCheckWinCellForBlock()
 {
 #for Rows
+if [[ $cellBlocking == false ]]
+then
    local row=0
    local col=0
    for ((row=0; row<NUM_OFROWS; row++))
@@ -245,6 +250,8 @@ function compCheckWinCellForBlock()
    done
 
 #FOR COLUMN
+elif [[ $cellBlocking == false ]]
+then
    local row=0
    local col=0
    for ((col=0; col<NUM_OFCOLUMNS; col++))
@@ -277,6 +284,8 @@ function compCheckWinCellForBlock()
    done
 
 #FOR DIAGONAL
+elif [[ $cellBlocking == false ]]
+then
       local row=0
       local col=0
 
@@ -329,6 +338,7 @@ function compCheckWinCellForBlock()
             return
           fi
 		 fi
+	fi
 }
 
 #function to check row for computer win
