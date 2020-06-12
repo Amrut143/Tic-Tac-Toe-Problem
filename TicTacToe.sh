@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 #@Author : Amrut
-#TicTacToe UseCase 8 [Check for computer win and block]
+#TicTacToe UseCase 9 [Check for corner availablity]
 
 echo "******Welcome to TicTacToe Game******"
 
@@ -17,6 +17,8 @@ LENGTH=$(( $ROWS * $COLUMNS ))
 cell=1
 inputCell=''
 playerTurn=''
+cellBlocking=''
+isCornerAvailable=''
 declare -A board
 
 #function for resetting board
@@ -136,7 +138,7 @@ function checkBoardForInput()
          if [ $(checkResult $PLAYER_LETTER) -eq 1 ]
          then
             echo "You Won The Game"
-            return 0
+            exit
           fi
 		  fi
       fi
@@ -147,14 +149,23 @@ function checkBoardForInput()
 		 checkRowForCompWin
        checkColForCompWin
        checkDiagonalForCompWin
-       computerTurn
-       playerTurn=0
        if [ $(checkResult $COMP_LETTER) -eq 1 ]
        then
             echo "Computer Won The Game"
-            return 0
-
+            exit
 		 fi
+		  compCheckWinCellForBlock
+         if [[ $cellBlocking == true ]]
+         then
+            cellBlocking=false
+         else
+            checkCornerAvailablity
+            if [ $isCornerAvailable == true ]
+            then
+               isCornerAvailable=false
+            fi
+         fi
+         playerTurn=0
     fi
   done
       echo "Match Tie"
@@ -195,10 +206,10 @@ function checkResult()
 }
 
 #function for computer turn
-function computerTurn()
+function compCheckWinCellForBlock()
 {
 #for Rows
-    local row=0
+   local row=0
    local col=0
    for ((row=0; row<NUM_OFROWS; row++))
    do
@@ -207,6 +218,7 @@ function computerTurn()
           if [ ${board[$row,$(($col+2))]} != $COMP_LETTER ]
           then
              board[$row,$(($col+2))]=$COMP_LETTER
+				 cellBlocking=true
              break
           fi
       elif [ ${board[$row,$(($col+1))]} == $PLAYER_LETTER ] && [ ${board[$row,$(($col+2))]} == $PLAYER_LETTER ]
@@ -214,6 +226,7 @@ function computerTurn()
           if [ ${board[$row,$col]} != $COMP_LETTER ]
           then
              board[$row,$col]=$COMP_LETTER
+				 cellBlocking=true
              break
           fi
       elif [ ${board[$row,$col]} == $PLAYER_LETTER ] && [ ${board[$row,$(($col+2))]} == $PLAYER_LETTER ]
@@ -221,6 +234,7 @@ function computerTurn()
           if [ ${board[$row,$(($col+1))]} != $COMP_LETTER ]
           then
              board[$row,$(($col+1))]=$COMP_LETTER
+				 cellBlocking=true
              break
           fi
       fi
@@ -236,6 +250,7 @@ function computerTurn()
          if [ ${board[$(($row+2)),$col]} != $COMP_LETTER ]
          then
             board[$(($row+2)),$col]=$COMP_LETTER
+				cellBlocking=true
             break
          fi
       elif [ ${board[$(($row+1)),$col]} == $PLAYER_LETTER ] && [ ${board[$(($row+2)),$col]} == $PLAYER_LETTER ]
@@ -243,6 +258,7 @@ function computerTurn()
          if [ ${board[$row,$col]} != $COMP_LETTER ]
          then
             board[$row,$col]=$COMP_LETTER
+				cellBlocking=true
             break
           fi
       elif [ ${board[$row,$col]} == $PLAYER_LETTER ] && [ ${board[$(($row+2)),$col]} == $PLAYER_LETTER ]
@@ -250,6 +266,7 @@ function computerTurn()
          if [ ${board[$(($row+1)),$col]} != $COMP_LETTER ]
          then
             board[$(($row+1)),$col]=$COMP_LETTER
+				cellBlocking=true
             break
          fi
       fi
@@ -264,6 +281,7 @@ function computerTurn()
          if [ ${board[$(($row+2)),$(($col+2))]} != $COMP_LETTER ]
          then
             board[$(($row+2)),$(($col+2))]=$COMP_LETTER
+				cellBlocking=true
             return
          fi
       elif [ ${board[$(($row+1)),$(($col+1))]} == $PLAYER_LETTER ] && [ ${board[$(($row+2)),$(($col+2))]} == $PLAYER_LETTER ]
@@ -271,6 +289,7 @@ function computerTurn()
          if [ ${board[$row,$col]} != $COMP_LETTER ]
          then
             board[$row,$col]=$COMP_LETTER
+				cellBlocking=true
             return
           fi
       elif [ ${board[$row,$col]} == $PLAYER_LETTER ] && [ ${board[$(($row+2)),$(($col+2))]} == $PLAYER_LETTER ]
@@ -278,6 +297,7 @@ function computerTurn()
          if [ ${board[$(($row+1)),$(($col+1))]} != $COMP_LETTER ]
          then
             board[$(($row+1)),$(($col+1))]=$COMP_LETTER
+				cellBlocking=true
             return
           fi
       elif [ ${board[$(($row+2)),$col]} == $PLAYER_LETTER ] &&  [ ${board[$(($row+1)),$(($col+1))]} == $PLAYER_LETTER ]
@@ -285,6 +305,7 @@ function computerTurn()
          if [ ${board[$row,$(($col+2))]} != $COMP_LETTER ]
          then
             board[$row,$(($col+2))]=$COMP_LETTER
+				cellBlocking=true
             return
           fi
       elif [ ${board[$(($row+1)),$(($col+1))]} == $PLAYER_LETTER ] && [ ${board[$row,$(($col+2))]} == $PLAYER_LETTER ]
@@ -292,6 +313,7 @@ function computerTurn()
          if [ ${board[$(($row+2)),$col]} != $COMP_LETTER ]
          then
             board[$(($row+2)),$col]=$COMP_LETTER
+				cellBlocking=true
             return
           fi
       elif [ ${board[$(($row+2)),$col]} == $PLAYER_LETTER ] && [ ${board[$row,$(($col+2))]} == $PLAYER_LETTER ]
@@ -299,23 +321,10 @@ function computerTurn()
          if [ ${board[$(($row+1)),$(($col+1))]} != $COMP_LETTER ]
          then
             board[$(($row+1)),$(($col+1))]=$COMP_LETTER
+				cellBlocking=true
             return
           fi
-		 else
-         while [ true ]
-         do
-            local row=$(( RANDOM % $ROWS ))
-            local col=$(( RANDOM % $COLUMNS ))
-
-            if [ ${board[$row,$col]} == $PLAYER_LETTER ] || [ ${board[$row,$col]} == $COMP_LETTER ]
-            then
-               continue
-            else
-               board[$row,$col]=$COMP_LETTER
-               break
-            fi
-         done
-      fi
+		 fi
 }
 
 #function to check row for computer win
@@ -373,7 +382,7 @@ function checkColForCompWin()
          fi
       elif [ ${board[$row,$column]} == $COMP_LETTER ] && [ ${board[$(($row+2)),$column]} == $COMP_LETTER ]
       then
-         if [${board[$(($row+1)),$column]} != $PLAYER_LETTER ]
+         if [ ${board[$(($row+1)),$column]} != $PLAYER_LETTER ]
          then
             board[$(($row+1)),$column]=$COMP_LETTER
             break
@@ -435,6 +444,29 @@ function checkDiagonalForCompWin()
          return
       fi
 }
+
+#function to check corner availablity
+function checkCornerAvailablity()
+{
+   if [ ${board[0,0]} != $PLAYER_LETTER ] && [ ${board[0,0]} != $COMP_LETTER ]
+   then
+      board[0,0]=$COMP_LETTER
+      isCornerAvailable=true
+   elif [ ${board[0,2]} != $PLAYER_LETTER ] && [ ${board[0,2]} != $COMP_LETTER ]
+   then
+      board[0,2]=$COMP_LETTER
+      isCornerAvailable=true
+   elif [ ${board[2,0]} != $PLAYER_LETTER ] && [ ${board[2,0]} != $COMP_LETTER ]
+   then
+      board[2,0]=$COMP_LETTER
+      isCornerAvailable=true
+   elif [ ${board[2,2]} != $PLAYER_LETTER ] && [ ${board[2,2]} != $COMP_LETTER ]
+   then
+      board[2,2]=$COMP_LETTER
+      isCornerAvailable=true
+   fi
+}
+
 
 resettingBoard
 toss
