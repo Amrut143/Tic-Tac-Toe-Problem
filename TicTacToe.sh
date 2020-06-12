@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 #@Author : Amrut
-#TicTacToe UseCase 9 [Check for corner availablity]
+#TicTacToe UseCase 10 [Check for center availablity]
 
 echo "******Welcome to TicTacToe Game******"
 
@@ -19,6 +19,7 @@ inputCell=''
 playerTurn=''
 cellBlocking=''
 isCornerAvailable=''
+isCenterAvailable=''
 declare -A board
 
 #function for resetting board
@@ -159,10 +160,11 @@ function checkBoardForInput()
          then
             cellBlocking=false
          else
-            checkCornerAvailablity
-            if [ $isCornerAvailable == true ]
+            checkCornerCenterAvailablity
+            if [ $isCornerAvailable == true ] || [ $isCenterAvailable == true ]
             then
                isCornerAvailable=false
+					isCenterAvailable=false
             fi
          fi
          playerTurn=0
@@ -375,7 +377,7 @@ function checkColForCompWin()
          fi
       elif [ ${board[$(($row+1)),$column]} == $COMP_LETTER ] && [ ${board[$(($row+2)),$column]} == $COMP_LETTER ]
       then
-         if [${board[$row,$column]} != $PLAYER_LETTER ]
+         if [ ${board[$row,$column]} != $PLAYER_LETTER ]
          then
             board[$row,$column]=$COMP_LETTER
             break
@@ -446,7 +448,7 @@ function checkDiagonalForCompWin()
 }
 
 #function to check corner availablity
-function checkCornerAvailablity()
+function checkCornerCenterAvailablity()
 {
    if [ ${board[0,0]} != $PLAYER_LETTER ] && [ ${board[0,0]} != $COMP_LETTER ]
    then
@@ -464,6 +466,11 @@ function checkCornerAvailablity()
    then
       board[2,2]=$COMP_LETTER
       isCornerAvailable=true
+	elif [ ${board[1,1]} != $PLAYER_LETTER ] && [ ${board[1,1]} != $COMP_LETTER ]
+   then
+      board[1,1]=$COMP_LETTER
+      isCenterAvailable=true
+
    fi
 }
 
