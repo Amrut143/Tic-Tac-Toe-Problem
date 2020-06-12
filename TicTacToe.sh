@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 #@Author : Amrut
-#TicTacToe UseCase 10 [Check for center availablity]
+#TicTacToe UseCase 11 [Check for any side availablity]
 
 echo "******Welcome to TicTacToe Game******"
 
@@ -20,6 +20,7 @@ playerTurn=''
 cellBlocking=''
 isCornerAvailable=''
 isCenterAvailable=''
+isSideAvailable=''
 declare -A board
 
 #function for resetting board
@@ -160,11 +161,12 @@ function checkBoardForInput()
          then
             cellBlocking=false
          else
-            checkCornerCenterAvailablity
-            if [ $isCornerAvailable == true ] || [ $isCenterAvailable == true ]
+            checkCornerCenterSideAvailablity
+            if [ $isCornerAvailable == true ] || [ $isCenterAvailable == true ] || [ $isSideAvailable == true ]
             then
                isCornerAvailable=false
 					isCenterAvailable=false
+					isSideAvailable=false
             fi
          fi
          playerTurn=0
@@ -370,7 +372,7 @@ function checkColForCompWin()
    do
       if [ ${board[$row,$column]} == $COMP_LETTER ] && [ ${board[$(($row+1)),$column]} == $COMP_LETTER ]
       then
-         if [${board[$(($row+2)),$column]} != $PLAYER_LETTER ]
+         if [ ${board[$(($row+2)),$column]} != $PLAYER_LETTER ]
          then
             board[$(($row+2)),$column]=$COMP_LETTER
             break
@@ -448,7 +450,7 @@ function checkDiagonalForCompWin()
 }
 
 #function to check corner availablity
-function checkCornerCenterAvailablity()
+function checkCornerCenterSideAvailablity()
 {
    if [ ${board[0,0]} != $PLAYER_LETTER ] && [ ${board[0,0]} != $COMP_LETTER ]
    then
@@ -471,6 +473,22 @@ function checkCornerCenterAvailablity()
       board[1,1]=$COMP_LETTER
       isCenterAvailable=true
 
+	 elif [ ${board[0,1]} != $PLAYER_LETTER ] && [ ${board[0,1]} != $COMP_LETTER ]
+   then
+      board[0,1]=$COMP_LETTER
+      isSideAvailable=true
+   elif [ ${board[1,2]} != $PLAYER_LETTER ] && [ ${board[1,2]} != $COMP_LETTER ]
+   then
+      board[1,2]=$COMP_LETTER
+      isSideAvailable=true
+   elif [ ${board[2,1]} != $PLAYER_LETTER ] && [ ${board[2,1]} != $COMP_LETTER ]
+   then
+      board[2,1]=$COMP_LETTER
+      isSideAvailable=true
+   elif [ ${board[1,0]} != $PLAYER_LETTER ] && [ ${board[1,0]} != $COMP_LETTER ]
+   then
+      board[1,0]=$COMP_LETTER
+      isSideAvailable=true
    fi
 }
 
