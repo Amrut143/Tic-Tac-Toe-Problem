@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 #@Author : Amrut
-#TicTacToe UseCase 6 [Computer play like player]
+#TicTacToe UseCase 7 [Computers turn and checking winning cells for player]
 
 echo "******Welcome to TicTacToe Game******"
 
@@ -16,6 +16,7 @@ LENGTH=$(( $ROWS * $COLUMNS ))
 #variables
 cell=1
 inputCell=''
+playerTurn=''
 declare -A board
 
 #function for resetting board
@@ -35,15 +36,13 @@ function toss()
 {
    if [ $(( RANDOM%2 )) -eq 0 ]
    then
+		playerTurn=0
       echo "Player Won The Toss"
       echo "====================="
-      echo "### Player's Turn ###"
-      echo "*********************"
    else
+		playerTurn=1
       echo "Computer Won The Toss"
       echo "======================="
-      echo "### Computer's Turn ###"
-      echo "***********************"
 	 fi
     }
 
@@ -98,6 +97,12 @@ function checkBoardForInput()
    for (( i=0; i<$LENGTH; i++ ))
    do
       printBoard
+		if [ "$playerTurn" == 0 ]
+      then
+      echo""
+      echo "*****Player's Turn*****"
+      echo "************************"
+
       read -p "Choose a cell you want : " inputCell
 
       if [ $inputCell -gt $LENGTH ]
@@ -124,53 +129,192 @@ function checkBoardForInput()
             echo "Invalid input, This cell is already filled, please choose another cell"
             printf "\n"
             ((i--))
-         fi
-         board[$rowIndex,$columnIndex]=$PLAYER_LETTER
+			else
+         	board[$rowIndex,$columnIndex]=$PLAYER_LETTER
+				playerTurn=1
 
-         if [ $(checkResult) -eq 1 ]
+         if [ $(checkResult $PLAYER_LETTER) -eq 1 ]
          then
             echo "You Won The Game"
             return 0
-         else
-            printf "\n"
-            echo "**Change Turn**"
-			 fi
+          fi
+		  fi
       fi
-   done
+    else
+       printf "\n"
+       echo "****Computer's Turn****"
+       echo "************************"
+       computerTurn
+       playerTurn=0
+       if [ $(checkResult $COMP_LETTER) -eq 1 ]
+       then
+            echo "Computer Won The Game"
+            return 0
+
+		 fi
+    fi
+  done
       echo "Match Tie"
 }
 
 #function to check the result after every move
 function checkResult()
 {
-   if [ $((${board[0,0]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[0,1]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[0,2]})) -eq $(($PLAYER_LETTER)) ]
+	  symbol=$1
+
+   if [ ${board[0,0]} == $symbol ] && [ ${board[0,1]} == $symbol ] && [ ${board[0,2]} == $symbol ]
    then
       echo 1
-   elif [ $((${board[1,0]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[1,1]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[1,2]})) -eq $(($PLAYER_LETTER)) ]
+   elif [ ${board[1,0]} == $symbol ] && [ ${board[1,1]} == $symbol ] && [ ${board[1,2]} == $symbol ]
    then
       echo 1
-   elif [ $((${board[2,0]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[2,1]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[2,2]})) -eq $(($PLAYER_LETTER)) ]
+   elif [ ${board[2,0]} == $symbol ] && [ ${board[2,1]} == $symbol ] && [ ${board[2,2]} == $symbol ]
    then
       echo 1
-   elif [ $((${board[0,0]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[1,0]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[2,0]})) -eq $(($PLAYER_LETTER)) ]
+   elif [ ${board[0,0]} == $symbol ] && [ ${board[1,0]} == $symbol ] && [ ${board[2,0]} == $symbol ]
    then
       echo 1
-   elif [ $((${board[0,1]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[1,1]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[2,1]})) -eq $(($PLAYER_LETTER)) ]
+   elif [ ${board[0,1]} == $symbol ] && [ ${board[1,1]} == $symbol ] && [ ${board[2,1]} == $symbol ]
    then
       echo 1
-   elif [ $((${board[0,2]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[1,2]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[2,2]})) -eq $(($PLAYER_LETTER)) ]
+   elif [ ${board[0,2]} == $symbol ] && [ ${board[1,2]} == $symbol ] && [ ${board[2,2]} == $symbol ]
    then
       echo 1
-   elif [ $((${board[0,0]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[1,1]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[2,2]})) -eq $(($PLAYER_LETTER)) ]
+   elif [ ${board[0,0]} == $symbol ] && [ ${board[1,1]} == $symbol ] && [ ${board[2,2]} == $symbol ]
    then
       echo 1
-   elif [ $((${board[2,0]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[1,1]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[0,2]})) -eq $(($PLAYER_LETTER)) ]
+   elif [ ${board[2,0]} == $symbol ] && [ ${board[1,1]} == $symbol ] && [ ${board[0,2]} == $symbol ]
    then
       echo 1
    else
       echo 0
    fi
 }
+
+#function for computer turn
+function computerTurn()
+{
+#for Rows
+    local row=0
+   local col=0
+   for ((row=0; row<NUM_OFROWS; row++))
+   do
+      if [ ${board[$row,$col]} == $PLAYER_LETTER ] && [ ${board[$(($row)),$(($col+1))]} == $PLAYER_LETTER ]
+      then
+          if [ ${board[$row,$(($col+2))]} != $COMP_LETTER ]
+          then
+             board[$row,$(($col+2))]=$COMP_LETTER
+             break
+          fi
+      elif [ ${board[$row,$(($col+1))]} == $PLAYER_LETTER ] && [ ${board[$row,$(($col+2))]} == $PLAYER_LETTER ]
+      then
+          if [ ${board[$row,$col]} != $COMP_LETTER ]
+          then
+             board[$row,$col]=$COMP_LETTER
+             break
+          fi
+      elif [ ${board[$row,$col]} == $PLAYER_LETTER ] && [ ${board[$row,$(($col+2))]} == $PLAYER_LETTER ]
+      then
+          if [ ${board[$row,$(($col+1))]} != $COMP_LETTER ]
+          then
+             board[$row,$(($col+1))]=$COMP_LETTER
+             break
+          fi
+      fi
+   done
+
+#FOR COLUMN
+   local row=0
+   local col=0
+   for ((col=0; col<NUM_OFCOLUMNS; col++))
+   do
+      if [ ${board[$row,$col]} == $PLAYER_LETTER ] &&  [ ${board[$(($row+1)),$col]} == $PLAYER_LETTER ]
+      then
+         if [ ${board[$(($row+2)),$col]} != $COMP_LETTER ]
+         then
+            board[$(($row+2)),$col]=$COMP_LETTER
+            break
+         fi
+      elif [ ${board[$(($row+1)),$col]} == $PLAYER_LETTER ] && [ ${board[$(($row+2)),$col]} == $PLAYER_LETTER ]
+      then
+         if [ ${board[$row,$col]} != $COMP_LETTER ]
+         then
+            board[$row,$col]=$COMP_LETTER
+            break
+          fi
+      elif [ ${board[$row,$col]} == $PLAYER_LETTER ] && [ ${board[$(($row+2)),$col]} == $PLAYER_LETTER ]
+      then
+         if [ ${board[$(($row+1)),$col]} != $COMP_LETTER ]
+         then
+            board[$(($row+1)),$col]=$COMP_LETTER
+            break
+         fi
+      fi
+   done
+
+#FOR DIAGONAL
+      local row=0
+      local col=0
+
+      if [ ${board[$row,$col]} == $PLAYER_LETTER ] &&  [ ${board[$(($row+1)),$(($col+1))]} == $PLAYER_LETTER ]
+      then
+         if [ ${board[$(($row+2)),$(($col+2))]} != $COMP_LETTER ]
+         then
+            board[$(($row+2)),$(($col+2))]=$COMP_LETTER
+            return
+         fi
+      elif [ ${board[$(($row+1)),$(($col+1))]} == $PLAYER_LETTER ] && [ ${board[$(($row+2)),$(($col+2))]} == $PLAYER_LETTER ]
+      then
+         if [ ${board[$row,$col]} != $COMP_LETTER ]
+         then
+            board[$row,$col]=$COMP_LETTER
+            return
+          fi
+      elif [ ${board[$row,$col]} == $PLAYER_LETTER ] && [ ${board[$(($row+2)),$(($col+2))]} == $PLAYER_LETTER ]
+      then
+         if [ ${board[$(($row+1)),$(($col+1))]} != $COMP_LETTER ]
+         then
+            board[$(($row+1)),$(($col+1))]=$COMP_LETTER
+            return
+          fi
+      elif [ ${board[$(($row+2)),$col]} == $PLAYER_LETTER ] &&  [ ${board[$(($row+1)),$(($col+1))]} == $PLAYER_LETTER ]
+      then
+         if [ ${board[$row,$(($col+2))]} != $COMP_LETTER ]
+         then
+            board[$row,$(($col+2))]=$COMP_LETTER
+            return
+          fi
+      elif [ ${board[$(($row+1)),$(($col+1))]} == $PLAYER_LETTER ] && [ ${board[$row,$(($col+2))]} == $PLAYER_LETTER ]
+      then
+         if [ ${board[$(($row+2)),$col]} != $COMP_LETTER ]
+         then
+            board[$(($row+2)),$col]=$COMP_LETTER
+            return
+          fi
+      elif [ ${board[$(($row+2)),$col]} == $PLAYER_LETTER ] && [ ${board[$row,$(($col+2))]} == $PLAYER_LETTER ]
+      then
+         if [ ${board[$(($row+1)),$(($col+1))]} != $COMP_LETTER ]
+         then
+            board[$(($row+1)),$(($col+1))]=$COMP_LETTER
+            return
+          fi
+		 else
+         while [ true ]
+         do
+            local row=$(( RANDOM % $ROWS ))
+            local col=$(( RANDOM % $COLUMNS ))
+
+            if [ ${board[$row,$col]} == $PLAYER_LETTER ] || [ ${board[$row,$col]} == $COMP_LETTER ]
+            then
+               continue
+            else
+               board[$row,$col]=$COMP_LETTER
+               break
+            fi
+         done
+      fi
+}
+
 resettingBoard
 toss
 assigningLetter
