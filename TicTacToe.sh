@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 #@Author : Amrut
-#TicTacToe UseCase 4 [Dispaly the board for input]
+#TicTacToe UseCase 5 [Check Result After Every Move win,loss and tie]
 
 echo "******Welcome to TicTacToe Game******"
 
@@ -45,7 +45,7 @@ function toss()
       echo "### Computer's Turn ###"
       echo "***********************"
 	 fi
-}
+    }
 
 #function for assigning the letter
 function assigningLetter()
@@ -59,6 +59,7 @@ function assigningLetter()
       COMP_LETTER=X
    fi
 echo "Player's Letter is : $PLAYER_LETTER"
+printf "\n"
 echo "Computer's Letter is : $COMP_LETTER"
 }
 
@@ -74,6 +75,7 @@ function initializeBoard()
       done
    done
 }
+
 #function to display the board
 function printBoard()
 {
@@ -83,7 +85,7 @@ function printBoard()
       do
          echo -n "|  ${board[$i,$j]}  |"
       done
-         printf "\n"
+         printf "\n\n"
    done
 }
 
@@ -109,11 +111,10 @@ function checkBoardForInput()
          then
             rowIndex=$(( $rowIndex - 1 ))
          fi
-
          columnIndex=$(( $inputCell % $ROWS ))
          if [ $columnIndex -eq 0 ]
          then
-				 columnIndex=$(( $columnIndex + 2 ))
+            columnIndex=$(( $columnIndex + 2 ))
          else
             columnIndex=$(( $columnIndex - 1 ))
          fi
@@ -125,8 +126,50 @@ function checkBoardForInput()
             ((i--))
          fi
          board[$rowIndex,$columnIndex]=$PLAYER_LETTER
+
+         if [ $(checkResult) -eq 1 ]
+         then
+            echo "You Won The Game"
+            return 0
+         else
+            printf "\n"
+            echo "**Change Turn**"
+			 fi
       fi
    done
+      echo "Match Tie"
+}
+
+#function to check the result after every move
+function checkResult()
+{
+   if [ $((${board[0,0]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[0,1]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[0,2]})) -eq $(($PLAYER_LETTER)) ]
+   then
+      echo 1
+   elif [ $((${board[1,0]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[1,1]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[1,2]})) -eq $(($PLAYER_LETTER)) ]
+   then
+      echo 1
+   elif [ $((${board[2,0]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[2,1]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[2,2]})) -eq $(($PLAYER_LETTER)) ]
+   then
+      echo 1
+   elif [ $((${board[0,0]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[1,0]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[2,0]})) -eq $(($PLAYER_LETTER)) ]
+   then
+      echo 1
+   elif [ $((${board[0,1]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[1,1]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[2,1]})) -eq $(($PLAYER_LETTER)) ]
+   then
+      echo 1
+   elif [ $((${board[0,2]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[1,2]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[2,2]})) -eq $(($PLAYER_LETTER)) ]
+   then
+      echo 1
+   elif [ $((${board[0,0]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[1,1]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[2,2]})) -eq $(($PLAYER_LETTER)) ]
+   then
+      echo 1
+   elif [ $((${board[2,0]})) -eq $(($PPLAYER_LETTER)) ] && [ $((${board[1,1]})) -eq $(($PLAYER_LETTER)) ] && [ $((${board[0,2]})) -eq $(($PLAYER_LETTER)) ]
+   then
+      echo 1
+   else
+      echo 0
+   fi
 }
 resettingBoard
 toss
@@ -134,4 +177,6 @@ assigningLetter
 initializeBoard
 checkBoardForInput
 printBoard
+
+
 
