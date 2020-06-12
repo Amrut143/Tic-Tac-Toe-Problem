@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 #@Author : Amrut
-#TicTacToe UseCase 5 [Check Result After Every Move win,loss and tie]
+#TicTacToe UseCase 6 [Computer play like player]
 
 echo "******Welcome to TicTacToe Game******"
 
