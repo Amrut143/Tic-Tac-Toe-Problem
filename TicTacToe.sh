@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 #@Author : Amrut
-#TicTacToe UseCase 2 [Toss to decide who get first chance to fill the board]
+#TicTacToe UseCase 3 [Assinging symbols i.e. 0 or x to player and computer]
 
 echo "******Welcome to TicTacToe Game******"
 
@@ -31,10 +31,30 @@ function toss()
    if [ $(( RANDOM%2 )) -eq 0 ]
    then
       echo "Player Won The Toss"
+      echo "==================="
+      echo "Player's Turn"
    else
       echo "Computer Won The Toss"
+      echo "====================="
+      echo "Computer's Turn"
    fi
+}
+
+#function for assigning the letter
+function assigningLetter()
+{
+   if [ $(( RANDOM%2 )) -eq 0 ]
+	 then
+      PLAYER_LETTER=X
+      COMP_LETTER=O
+   else
+      PLAYER_LETTER=O
+      COMP_LETTER=X
+   fi
+echo "Player's Letter is : $PLAYER_LETTER"
+echo "Computer's Letter is : $COMP_LETTER"
 }
 resettingBoard
 toss
+assigningLetter
 
