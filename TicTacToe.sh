@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 #@Author : Amrut
-#TicTacToe UseCase 7 [Computers turn and checking winning cells for player]
+#TicTacToe UseCase 8 [Check for computer win and block]
 
 echo "******Welcome to TicTacToe Game******"
 
@@ -84,7 +84,7 @@ function printBoard()
       do
          echo -n "|  ${board[$i,$j]}  |"
       done
-         printf "\n\n"
+         printf "\n"
    done
 }
 
@@ -144,6 +144,9 @@ function checkBoardForInput()
        printf "\n"
        echo "****Computer's Turn****"
        echo "************************"
+		 checkRowForCompWin
+       checkColForCompWin
+       checkDiagonalForCompWin
        computerTurn
        playerTurn=0
        if [ $(checkResult $COMP_LETTER) -eq 1 ]
@@ -312,6 +315,124 @@ function computerTurn()
                break
             fi
          done
+      fi
+}
+
+#function to check row for computer win
+function checkRowForCompWin()
+{
+   local row=0
+   local column=0
+   for ((row=0; row<ROWS; row++))
+   do
+      if [ ${board[$row,$column]} == $COMP_LETTER ] && [ ${board[$row,$(($column+1))]} == $COMP_LETTER ]
+      then
+         if [ ${board[$row,$(($column+2))]} != $PLAYER_LETTER ]
+         then
+            board[$row,$(($column+2))]=$COMP_LETTER
+            break
+         fi
+      elif [ ${board[$row,$column]} == $COMP_LETTER ] && [ ${board[$row,$(($colum+2))]} == $COMP_LETTER ]
+      then
+         if [ ${board[$row,$column]} != $PLAYER_LETTER ]
+         then
+            board[$row,$column]=$COMP_LETTER
+            break
+         fi
+      elif [ ${board[$row,$column]} == $COMP_LETTER ] && [ ${board[$row,$(($colum+2))]} == $COMP_LETTER ]
+      then
+         if [ ${board[$row,$(($column+1))]} != $PLAYER_LETTER ]
+         then
+            board[$row,$(($column+1))]=$COMP_LETTER
+            break
+         fi
+      fi
+   done
+}
+
+#function to check column for computer win
+function checkColForCompWin()
+{
+   local row=0
+   local column=0
+   for ((column=0; column<COLUMNS; column++))
+   do
+      if [ ${board[$row,$column]} == $COMP_LETTER ] && [ ${board[$(($row+1)),$column]} == $COMP_LETTER ]
+      then
+         if [${board[$(($row+2)),$column]} != $PLAYER_LETTER ]
+         then
+            board[$(($row+2)),$column]=$COMP_LETTER
+            break
+         fi
+      elif [ ${board[$(($row+1)),$column]} == $COMP_LETTER ] && [ ${board[$(($row+2)),$column]} == $COMP_LETTER ]
+      then
+         if [${board[$row,$column]} != $PLAYER_LETTER ]
+         then
+            board[$row,$column]=$COMP_LETTER
+            break
+         fi
+      elif [ ${board[$row,$column]} == $COMP_LETTER ] && [ ${board[$(($row+2)),$column]} == $COMP_LETTER ]
+      then
+         if [${board[$(($row+1)),$column]} != $PLAYER_LETTER ]
+         then
+            board[$(($row+1)),$column]=$COMP_LETTER
+            break
+         fi
+      fi
+   done
+
+}
+
+#function to check diagonal for computer win
+function checkDiagonalForCompWin()
+{
+   local row=0
+   local col=0
+
+      if [ ${board[$row,$col]} == $COMP_LETTER ] &&  [ ${board[$(($row+1)),$(($col+1))]} == $COMP_LETTER ]
+      then
+         if [ ${board[$(($row+2)),$(($col+2))]} != $PLAYER_LETTER ]
+         then
+            board[$(($row+2)),$(($col+2))]=$COMP_LETTER
+            return
+         fi
+      elif [ ${board[$(($row+1)),$(($col+1))]} == $COMP_LETTER ] && [ ${board[$(($row+2)),$(($col+2))]} == $COMP_LETTER ]
+      then
+         if [ ${board[$row,$col]} != $PLAYER_LETTER ]
+         then
+            board[$row,$col]=$COMP_LETTER
+            return
+          fi
+      elif [ ${board[$row,$col]} == $COMP_LETTER ] && [ ${board[$(($row+2)),$(($col+2))]} == $COMP_LETTER ]
+      then
+         if [ ${board[$(($row+1)),$(($col+1))]} != $PLAYER_LETTER ]
+         then
+            board[$(($row+1)),$(($col+1))]=$COMP_LETTER
+            return
+          fi
+      elif [ ${board[$(($row+2)),$col]} == $COMP_LETTER ] &&  [ ${board[$(($row+1)),$(($col+1))]} == $COMP_LETTER ]
+      then
+         if [ ${board[$row,$(($col+2))]} != $PLAYER_LETTER ]
+         then
+            board[$row,$(($col+2))]=$COMP_LETTER
+            return
+          fi
+      elif [ ${board[$(($row+1)),$(($col+1))]} == $COMP_LETTER ] && [ ${board[$row,$(($col+2))]} == $COMP_LETTER ]
+      then
+         if [ ${board[$(($row+2)),$col]} != $PLAYER_LETTER ]
+         then
+            board[$(($row+2)),$col]=$COMP_LETTER
+            return
+          fi
+      elif [ ${board[$(($row+2)),$col]} == $COMP_LETTER ] && [ ${board[$row,$(($col+2))]} == $COMP_LETTER ]
+      then
+         if [ ${board[$(($row+1)),$(($col+1))]} != $PLAYER_LETTER ]
+         then
+            board[$(($row+1)),$(($col+1))]=$COMP_LETTER
+				 return
+          fi
+      else
+         return
       fi
 }
 
